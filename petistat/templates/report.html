@@ -167,7 +167,7 @@
    поки сторінка не перестане переповнюватися, і оновлює рядок «…і ще N». */
 (function(){
   function plural(n,a,b,c){var m=n%10,h=n%100;return m==1&&h!=11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c);}
-  function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"\u202f");}
+  function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"\u00a0");}
   function fit(){
     var page=document.querySelector(".page"); if(!page) return;
     var w=page.getBoundingClientRect().width; if(w<600) return;           // мобільний перегляд — не чіпаємо

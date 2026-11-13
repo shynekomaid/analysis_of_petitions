@@ -40,14 +40,15 @@ def dmy(iso):
 
 # ------------------------------------------------------------------ SVG
 def vbars(items: list[tuple[str, float]], *, W=300, H=120, labels=None, hl=None, cls="m1", fmt_v=None,
-          every=1, title="", small=False) -> str:
+          every=1, title="", small=False, ref=None, ref_label="", sub=None) -> str:
     """Вертикальні стовпчики. items: (підпис осі, значення)."""
     fmt_v = fmt_v or (lambda v: fmt(int(v)))
     n = len(items) or 1
-    mx = max((v for _, v in items), default=1) or 1
+    mx = max([v for _, v in items] + ([ref * 1.15] if ref else [])) or 1
     gap = 4 if n < 16 else 2
     bw = (W - gap * (n + 1)) / n
-    out = [f'<svg viewBox="0 0 {W} {H+28}" class="chart" role="img" aria-label="{e(title)}">'
+    extra = 11 if sub else 0
+    out = [f'<svg viewBox="0 0 {W} {H+28+extra}" class="chart" role="img" aria-label="{e(title)}">'
            f'<line x1="0" x2="{W}" y1="{H}" y2="{H}" class="axis"/>']
     for i, (lab, v) in enumerate(items):
         x = gap + i * (bw + gap)
@@ -63,7 +64,13 @@ def vbars(items: list[tuple[str, float]], *, W=300, H=120, labels=None, hl=None,
             out.append(f'<text x="{x+bw/2:.1f}" y="{y-4:.1f}" class="vl{" sm" if small else ""}">{fmt_v(v)}</text>')
         if i % every == 0 or i == n - 1:
             out.append(f'<text x="{x+bw/2:.1f}" y="{H+13}" class="tl">{e(lab)}</text>')
+            if sub:
+                out.append(f'<text x="{x+bw/2:.1f}" y="{H+24}" class="tl" style="font-size:7px">{e(sub[i])}</text>')
         out.append("</g>")
+    if ref:
+        yr = H - (H - 16) * ref / mx
+        out.append(f'<line x1="0" x2="{W}" y1="{yr:.1f}" y2="{yr:.1f}" class="refl"/>'
+                   f'<text x="{W-2}" y="{yr-3:.1f}" class="tl" text-anchor="end">{e(ref_label)}</text>')
     out.append("</svg>")
     return "".join(out)
 
@@ -141,7 +148,7 @@ def build_context(r: SiteReport) -> dict[str, str]:
                        f'<td class="num">{ps}</td></tr>' for a, n, s, ps, g in r.prolific)
     top10_auth = sum(x[1] for x in r.prolific)
     ncats = sum(1 for c in r.cats if c.id)
-    top_signers = "".join(f'<tr><td class="num id">{i}</td><td class="ttl">{dot(g)}{e(nm)}</td><td class="num">{c}</td>'
+    top_signers = "".join(f'<tr><td class="num id">{i}</td><td class="ttl">{dot(g)}{e(nm)}</td><td class="num">{fmt(c)}</td>'
                           f'<td class="num">{k} з {ncats}</td></tr>'
                           for i, (nm, c, g, k) in enumerate(r.top_signers, 1))
     regions = hbars([(reg.replace(" область", " обл."), n, fmt(n)) for reg, n in r.regions[:12]], label_w="42%")
@@ -161,15 +168,29 @@ def build_context(r: SiteReport) -> dict[str, str]:
         for y, f, u, n in r.by_year_signers)
 
     # --- стор. 5: імена та активність
-    def names(lst, total):
-        return "".join(f'<li><span>{e(n)}</span><b class="num">{fmt(c)}</b><i class="muted num">{pc(c, total)}%</i></li>' for n, c in lst)
+    def names(lst, total, cls="m"):
+        """Рівна таблиця: № · ім'я · людей · частка (з тонкою смугою; масштаб — найчастіше ім'я списку)."""
+        mx = max((c for _, c in lst), default=1) or 1
+        rows = "".join(
+            f'<tr><td class="nr">{i}</td><td class="nn">{e(n)}</td><td class="nc">{fmt(c)}</td>'
+            f'<td class="np"><span class="nbar {cls}"><i style="width:{100 * c / mx:.0f}%"></i></span>{pc(c, total)}%</td></tr>'
+            for i, (n, c) in enumerate(lst, 1))
+        return ('<table class="nt"><colgroup><col style="width:8%"><col style="width:36%"><col style="width:27%">'
+                '<col style="width:29%"></colgroup><thead><tr><th class="nr">#</th><th>Ім\'я</th><th class="r">Людей</th>'
+                f'<th class="r">Частка</th></tr></thead><tbody>{rows}</tbody></table>')
     hours_svg = vbars([(f"{h:02d}", v) for h, v in enumerate(r.hours)], labels=lambda i: False, every=3,
                       title="Підписи за годиною доби")
     wd_svg = vbars(list(zip(WEEKDAYS, r.weekdays)), labels=lambda i: False, title="Підписи за днем тижня",
                    hl=lambda i, lab: r.weekdays and r.weekdays[i] == max(r.weekdays))
-    rep_svg = hbars([(lab + " " + plural(int(lab.split("–")[0].rstrip("+")), "петиція", "петиції", "петицій"),
-                      n, f'{fmt(n)} · {pc_auto(n, r.unique_signers)}%') for lab, n in r.repeat],
-                    label_w="32%", val_w="118px")
+    # окремі колонки «людей» і «частка», щоб числа не злипались
+    rmx = max((n for _, n in r.repeat), default=1) or 1
+    rep_svg = ('<div class="hb hbh" style="grid-template-columns:30% 1fr 74px 52px"><span></span><span></span>'
+               '<b class="num">людей</b><b class="num">частка</b></div>' + "".join(
+        f'<div class="hb" style="grid-template-columns:30% 1fr 74px 52px">'
+        f'<span class="hbl">{lab} {plural(int(lab.split("–")[0].rstrip("+")), "петиція", "петиції", "петицій")}</span>'
+        f'<div class="hbb"><i style="width:{max(0.5, 100 * n / rmx):.1f}%"></i></div>'
+        f'<b class="num">{fmt(n)}</b><b class="num muted" style="font-weight:500">{pc_auto(n, r.unique_signers)}%</b></div>'
+        for lab, n in r.repeat))
     peak_h = max(range(24), key=lambda h: r.hours[h]) if any(r.hours) else 0
     one = dict(r.repeat).get("1", 0)
 
@@ -246,10 +267,11 @@ def build_context(r: SiteReport) -> dict[str, str]:
         SP=fmt(r.sig_petitions), SROWS=dec(r.sig_rows / 1e6, 2), UNIQ=dec(r.unique_signers / 1e6, 2),
         SFP=pc(r.sF, sN), SMP=pc(r.sM, sN), UFP=pc(r.uF, uN), CAPS_P=pc(r.u_upper, r.unique_signers), NA=fmt(r.u_na),
         CAT_WOMEN=cat_women, WF=pc(wF[0], wF[1], 0), WM=pc(wM[0], wM[1], 0), BY_YEAR=by_year,
-        NAMES_F=names(r.names_F, r.uF), NAMES_M=names(r.names_M, r.uM), SURNAMES=names(r.surnames, r.unique_signers),
+        NAMES_F=names(r.names_F, r.uF, "f"), NAMES_M=names(r.names_M, r.uM, "m"),
+        SURNAMES=names(r.surnames, r.unique_signers, "n").replace("<th>Ім'я</th>", "<th>Прізвище</th>"),
         HOURS_SVG=hours_svg, WD_SVG=wd_svg, PEAK_H=f"{peak_h:02d}:00", REPEAT=rep_svg,
         ONE_P=pc(one, r.unique_signers, 0), TOP1=dec(r.top1_share, 0), TOP10=dec(r.top10_share, 0),
-        RMAX=str(r.repeat_max), AVG_PER=dec(r.sig_rows / r.unique_signers, 2) if r.unique_signers else "—",
+        RMAX=fmt(r.repeat_max), AVG_PER=dec(r.sig_rows / r.unique_signers, 2) if r.unique_signers else "—",
         MISSING=(f"Для {r.missing_signers} петицій підписантів у кеші немає — їх не враховано." if r.missing_signers else
                  "Враховано всіх підписантів усіх петицій нової платформи."),
         PB=r.index_at.strftime("%d.%m.%Y"),
@@ -448,15 +470,22 @@ def extra_context(r: SiteReport) -> dict[str, str]:
 
     # ---------- 10. заголовки
     feats = title_features(r.petitions)
-    feat_html = ""
-    for name, rows in feats:
-        feat_html += f'<tr class="grp"><td colspan="4">{e(name)}</td></tr>'
-        for k, n, ps in rows:
-            feat_html += (f'<tr><td class="ttl" style="padding-left:16px">{e(k)}</td><td class="num">{fmt(n)}</td>'
-                          f'<td class="num">{ps}</td><td class="num">{pc_auto(ps, n)}%</td></tr>')
+    fin_n = sum(n for _, n, _ in feats[0][1]) if feats else 0
+    fin_ok = sum(ps for _, _, ps in feats[0][1]) if feats else 0
+    base = 100 * fin_ok / fin_n if fin_n else 0
+    short = {"Заголовок КАПСОМ": "Заголовок КАПСОМ", "Знак оклику в заголовку": "Знак «!» у заголовку",
+             "Емодзі в заголовку": "Емодзі в заголовку", "Довжина заголовка, символів": "Довжина заголовка, символів",
+             "Довжина тексту, символів": "Довжина тексту петиції, символів"}
+    def fchart(name, rows, W):
+        return (f'<div class="card fc"><h3>{e(short.get(name, name))}</h3>'
+                + vbars([(k, 100 * ps / n if n else 0) for k, n, ps in rows], W=W, H=78, cls="m2",
+                        fmt_v=lambda v: f"{dec(v, 1)}%", sub=[f"{fmt(n)} пет." for _, n, _ in rows],
+                        ref=base, title=name) + "</div>")
+    feat_small = "".join(fchart(n_, rows, 180) for n_, rows in feats[:3])
+    feat_wide = "".join(fchart(n_, rows, 300) for n_, rows in feats[3:])
     pw, aw = top_words(r.petitions)
-    words_pass = "".join(f'<li><span>{e(w)}</span><b class="num">{c}</b><i class="muted num">×{dec(l, 1)}</i></li>' for w, c, l in pw[:12])
-    words_all = "".join(f'<li><span>{e(w)}</span><b class="num">{fmt(c)}</b></li>' for w, c in aw[:12])
+    words_pass = hbars([(w, c, f"{c} · ×{dec(l, 1)}") for w, c, l in pw[:10]], label_w="38%", val_w="64px", cls="hb-c")
+    words_all = hbars([(w, c, fmt(c)) for w, c in aw[:10]], label_w="38%", val_w="44px")
     fd = {n: {k: (cnt, ps) for k, cnt, ps in rows} for n, rows in feats}
     def rate(n, k):
         cnt, ps = fd.get(n, {}).get(k, (0, 0)); return pc_auto(ps, cnt)
@@ -509,7 +538,23 @@ def extra_context(r: SiteReport) -> dict[str, str]:
         HEAT=heat, HEAT_HEAD=heat_head, BREADTH=breadth, ONE_THEME=one_theme,
         BEST_PAIR=(f"«{e(short_cat(titles.get(best[0], '')))}» → «{e(short_cat(titles.get(best[1], '')))}»: "
                    f"{pc(pair.get(best, 0), cp[best[0]], 0)}%") if best else "—",
-        FEATS=feat_html, WORDS_PASS=words_pass, WORDS_ALL=words_all,
+        LEAD10=(lambda ex, em, lx: (
+            ("Гучний заголовок не допомагає: " + (
+                "із «!» чи емодзі не пройшла жодна петиція. " if ex[1] == 0 and em[1] == 0 else
+                f"із «!» набрали 25 000 лише {ex[1]} з {fmt(ex[0])}, з емодзі — {em[1]} з {fmt(em[0])}. "))
+            + (f"Важить зміст — розгорнутий текст (3–6 тис. символів) набирає 25 000 у {lx} разів частіше, ніж короткий."
+               if lx != "—" else "")))(
+            fd.get("Знак оклику в заголовку", {}).get("так", (0, 0)), fd.get("Емодзі в заголовку", {}).get("так", (0, 0)),
+            (lambda d_: dec((d_.get("3–6 тис.", (0, 0))[1] / d_["3–6 тис."][0]) / (d_["до 1 тис."][1] / d_["до 1 тис."][0]), 0)
+             if d_.get("3–6 тис.", (0, 0))[0] and d_.get("до 1 тис.", (0, 0))[0] and d_["до 1 тис."][1] else "—")(
+                fd.get("Довжина тексту, символів", {}))),
+        FEAT_SMALL=feat_small, FEAT_WIDE=feat_wide, WORDS_PASS=words_pass, WORDS_ALL=words_all, F_BASE=dec(base, 1),
+        R_EMO=str(fd.get("Емодзі в заголовку", {}).get("так", (0, 0))[1]),
+        R_EMO_N=fmt(fd.get("Емодзі в заголовку", {}).get("так", (0, 0))[0]),
+        R_LEN_X=(lambda a_, b_: dec(b_ / a_, 0) if a_ else "—")(
+            *(lambda d_: ((d_.get("до 1 тис.", (1, 0))[1] / d_.get("до 1 тис.", (1, 0))[0]) if d_.get("до 1 тис.", (0, 0))[0] else 0,
+                          (d_.get("3–6 тис.", (1, 0))[1] / d_.get("3–6 тис.", (1, 0))[0]) if d_.get("3–6 тис.", (0, 0))[0] else 0))(
+                fd.get("Довжина тексту, символів", {}))),
         R_CAPS_Y=rate("Заголовок КАПСОМ", "так"), R_CAPS_N=rate("Заголовок КАПСОМ", "ні"),
         R_EXCL=str(excl[1]), R_EXCL_N=fmt(excl[0]),
         R_SHORT=rate("Довжина тексту, символів", "до 1 тис."), R_LONG=rate("Довжина тексту, символів", "3–6 тис."),

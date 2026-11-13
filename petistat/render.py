@@ -16,7 +16,7 @@ e = html.escape
 
 # ------------------------------------------------------------------ формати
 def fmt(n: int) -> str:
-    return f"{n:,}".replace(",", " ")
+    return f"{n:,}".replace(",", " ")
 
 
 def dec(v: float, d: int = 1) -> str:
@@ -109,14 +109,14 @@ def gender_bar(label: str, f: float, note: str) -> str:
 
 # Шрифти з кирилицею (Google Fonts). axes — специфікація осей для css2 API; тільки ті, що реально є у шрифта.
 FONTS = {
-    "inter":    ("Inter", "opsz,wght@14..32,400..800"),   # opsz: великі цифри/заголовки щільніші
     "overpass": ("Overpass", "wght@400..800"),
+    "inter":    ("Inter", "opsz,wght@14..32,400..800"),   # opsz: великі цифри/заголовки щільніші
     "onest":    ("Onest", "wght@400..800"),
     "golos":    ("Golos Text", "wght@400..800"),
     "manrope":  ("Manrope", "wght@400..800"),
     "plex":     ("IBM Plex Sans", "wght@400;500;600;700"),
 }
-DEFAULT_FONT = "inter"
+DEFAULT_FONT = "overpass"
 
 
 def font_ctx(key: str) -> dict[str, str]:

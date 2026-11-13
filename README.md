@@ -67,7 +67,7 @@ python -m petistat 11247                 # те саме без entry point
 | `--cache` | `data/` | тека кешу |
 | `--out` | `reports/` | тека звітів |
 | `--template` | вбудований | свій HTML-шаблон з плейсхолдерами `{{…}}` |
-| `--font` | `inter` | шрифт звіту: `inter`, `overpass`, `onest`, `golos`, `manrope`, `plex` (усі з кирилицею, Google Fonts) |
+| `--font` | `overpass` | шрифт звіту: `overpass`, `inter`, `onest`, `golos`, `manrope`, `plex` (усі з кирилицею, Google Fonts) |
 | `--no-pdf` | — | не робити PDF |
 | `--open` | — | відкрити звіт |
 
@@ -106,7 +106,7 @@ python -m petistat 11247                 # те саме без entry point
 uv run kmustat                 # перший запуск: ~3,5 млн підписів, 10–60 хв залежно від мережі
 uv run kmustat --no-signers    # не довантажувати підписантів, рахувати по кешу
 uv run kmustat --offline       # лише кеш
-uv run kmustat --font overpass   # без --font у терміналі програма запитає шрифт (типово Inter, вибір запам'ятовується)
+uv run kmustat --font overpass   # без --font у терміналі програма запитає шрифт (типово Overpass, вибір запам'ятовується)
 uv run kmustat --workers 8 --open
 uv run kmustat --no-media       # без пошуку згадок у Google News (стор. 21–22 будуть порожні)
 ```

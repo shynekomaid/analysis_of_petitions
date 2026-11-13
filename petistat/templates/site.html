@@ -16,6 +16,19 @@
 .chart .ln{fill:none;stroke:var(--caps);stroke-width:2;stroke-linejoin:round}
 .chart .refl{stroke:var(--ink2);stroke-width:1;stroke-dasharray:3 3}
 .chart .hit{fill:transparent}
+table.nt{table-layout:fixed;width:100%;font-size:8.4pt}
+table.nt th{font-size:7pt;padding:0 4px 4px}
+table.nt td{padding:3px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+table.nt td.nr,table.nt th.nr{color:var(--muted);text-align:right;padding-right:6px}
+table.nt td.nn{overflow:hidden;text-overflow:ellipsis;font-weight:500}
+table.nt td.nc{text-align:right;font-weight:600}
+table.nt td.np{text-align:right;color:var(--ink2)}
+.nbar{display:inline-block;width:20px;height:5px;background:var(--soft);border-radius:3px;margin-right:5px;vertical-align:middle;overflow:hidden}
+.nbar i{display:block;height:100%;border-radius:3px}
+.nbar.f i{background:var(--fem)}.nbar.m i{background:var(--mal)}.nbar.n i{background:var(--neutral)}
+.card.fc{padding:10px 12px 6px}
+.card.fc h3{margin-bottom:4px}
+.hb-c .hbb i{background:var(--caps)}
 .chart .mk{font-size:8px;fill:var(--fem)}
 .chart .grid{stroke:var(--line);stroke-width:1}
 .chart .lnf{fill:none;stroke:var(--fem);stroke-width:2;stroke-linejoin:round}
@@ -37,6 +50,7 @@ ul.peaks li{padding:2px 0}
 .hbb{height:10px;background:var(--soft);border-radius:4px;overflow:hidden}
 .hbb i{display:block;height:100%;background:var(--accent);border-radius:0 4px 4px 0}
 .hb b{text-align:right;font-weight:600}
+.hb.hbh b{font-size:7pt;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .hb .stack{height:10px}
 .tiles.t4{grid-template-columns:repeat(4,1fr)}
 @media (max-width:640px){.tiles.t4{grid-template-columns:repeat(2,1fr)}}
@@ -223,9 +237,9 @@ p.lead{margin-bottom:12px}
   <h1>{{H5}}</h1>
 
   <div class="grid3">
-    <div><h3><i class="dot f"></i>Жіночі імена</h3><div class="names"><ul>{{NAMES_F}}</ul></div></div>
-    <div><h3><i class="dot m"></i>Чоловічі імена</h3><div class="names"><ul>{{NAMES_M}}</ul></div></div>
-    <div><h3>Прізвища</h3><div class="names"><ul>{{SURNAMES}}</ul></div></div>
+    <div><h3><i class="dot f"></i>Жіночі імена</h3>{{NAMES_F}}</div>
+    <div><h3><i class="dot m"></i>Чоловічі імена</h3>{{NAMES_M}}</div>
+    <div><h3><i class="dot n"></i>Прізвища</h3>{{SURNAMES}}</div>
   </div>
   <p class="note">Відсоток — частка серед жінок, серед чоловіків і серед усіх підписантів відповідно.</p>
 
@@ -397,25 +411,32 @@ p.lead{margin-bottom:12px}
 <section class="page">
   <div class="top">
     <div class="kicker">Заголовки і тексти · завершені петиції</div>
-    <div class="src">Успіх — частка тих, що набрали 25 000<br>Активні петиції не враховано</div>
+    <div class="src">Шанс — частка тих, що набрали 25 000<br>Активні петиції не враховано</div>
   </div>
   <h1>Чи допомагає КАПС і знак оклику</h1>
-  <p class="lead">Знак оклику в заголовку мають {{R_EXCL_N}} петицій, з них поріг набрали {{R_EXCL}}. Заголовки КАПСОМ проходять у {{R_CAPS_Y}}% випадків проти {{R_CAPS_N}}% у звичайних. Сильніше на успіх впливає обсяг тексту: коротка петиція (до 1 тис. символів) — {{R_SHORT}}%, розгорнута (3–6 тис.) — {{R_LONG}}%.</p>
+  <p class="lead">{{LEAD10}}</p>
 
-  <div class="grid2">
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{R_EXCL}} з {{R_EXCL_N}}</b><span>петицій зі знаком «!» набрали 25 000</span></div>
+    <div class="tile"><b class="num">{{R_EMO}} з {{R_EMO_N}}</b><span>петицій з емодзі набрали 25 000</span></div>
+    <div class="tile"><b class="num">{{R_CAPS_Y}}%</b><span>шанс заголовка КАПСОМ</span><small>звичайного — {{R_CAPS_N}}%</small></div>
+    <div class="tile"><b class="num">×{{R_LEN_X}}</b><span>розгорнутий текст проти короткого</span><small>{{R_LONG}}% проти {{R_SHORT}}%</small></div>
+  </div>
+
+  <div class="grid3">{{FEAT_SMALL}}</div>
+  <div class="grid2" style="margin-top:10px">{{FEAT_WIDE}}</div>
+  <p class="note">Пунктир — середній шанс по сайту ({{F_BASE}}%). Під стовпчиками — кількість петицій. Це кореляція, не причина: розгорнутий текст може бути ознакою підготовленої ініціативи, а не сам по собі приводити до успіху.</p>
+
+  <div class="grid2" style="margin-top:12px">
     <div>
-      <table class="compact">
-        <thead><tr><th>Ознака</th><th class="r">Петицій</th><th class="r">25 000+</th><th class="r">Успіх</th></tr></thead>
-        <tbody>{{FEATS}}</tbody>
-      </table>
-      <p class="note">Кореляція, не причина: розгорнуті тексти частіше пишуть організовані ініціативні групи, які й так уміють збирати підписи.</p>
+      <h3>Слова заголовків, що набрали 25 000</h3>
+      {{WORDS_PASS}}
+      <p class="note">Число — у скількох успішних заголовках; «×» — у скільки разів частіше, ніж у середньому по сайту.</p>
     </div>
     <div>
-      <h3>Слова в заголовках петицій, що набрали 25 000</h3>
-      <div class="names"><ul>{{WORDS_PASS}}</ul></div>
-      <p class="note">Число — у скількох заголовках трапляється слово; «×» — у скільки разів частіше, ніж у середньому по сайту.</p>
-      <h3 style="margin-top:10px">Найчастіші слова всіх заголовків</h3>
-      <div class="names"><ul>{{WORDS_ALL}}</ul></div>
+      <h3>Найчастіші слова всіх заголовків</h3>
+      {{WORDS_ALL}}
+      <p class="note">Без службових слів («щодо», «україни», «внесення змін»…).</p>
     </div>
   </div>
   <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>10 / 22</span></div>
