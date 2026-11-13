@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{AUTHOR_SHORT}}: підписанти петицій</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="{{FONT_URL}}" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#e9e8e4; --paper:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#8a8984;
+  --line:#e2e1dc; --soft:#f3f2ef;
+  --fem:#eb6834; --mal:#2a78d6; --caps:#6250d6; --neutral:#c9c8c2;
+  --accent:#2a78d6; --hl:#eef4fc;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f0f0e; --paper:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#8f8e86;
+    --line:#2e2e2b; --soft:#232321;
+    --fem:#d95926; --mal:#3987e5; --caps:#9085e9; --neutral:#4a4a46;
+    --accent:#3987e5; --hl:#1f2a38;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f0f0e; --paper:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#8f8e86;
+  --line:#2e2e2b; --soft:#232321;
+  --fem:#d95926; --mal:#3987e5; --caps:#9085e9; --neutral:#4a4a46;
+  --accent:#3987e5; --hl:#1f2a38;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{font-family:{{FONT_STACK}};font-feature-settings:{{FONT_FEATURES}};color:var(--ink);font-size:10.5pt;line-height:1.42;-webkit-font-smoothing:antialiased;padding:24px 16px}
+.num{font-variant-numeric:tabular-nums}
+.page{width:210mm;min-height:297mm;margin:0 auto 24px;background:var(--paper);padding:14mm 14mm 12mm;position:relative;box-shadow:0 1px 3px rgba(0,0,0,.08),0 8px 30px rgba(0,0,0,.06);display:flex;flex-direction:column}
+@media (max-width:840px){.page{width:100%;min-height:0;padding:20px 16px}}
+.kicker{font-size:8pt;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:25pt;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:6px 0 8px;text-wrap:balance}
+h2{font-size:15pt;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;text-wrap:balance}
+h3{font-size:9pt;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.lead{color:var(--ink2);font-size:10.5pt;max-width:150mm}
+.muted{color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px}
+.top .src{font-size:8pt;color:var(--muted);text-align:right}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0 16px}
+@media (max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--soft);border-radius:10px;padding:10px 12px}
+.tile b{display:block;font-size:20pt;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.tile span{font-size:8pt;color:var(--ink2)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+.dot.f{background:var(--fem)}.dot.m{background:var(--mal)}.dot.c{background:var(--caps)}.dot.n{background:var(--neutral)}
+table{width:100%;border-collapse:collapse;font-size:8.6pt}
+th{font-size:7.5pt;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:0 6px 6px;border-bottom:1px solid var(--line)}
+th.r,td.num{text-align:right}
+td{padding:6px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.id{color:var(--muted);text-align:left;width:38px}
+td.ttl{line-height:1.25}
+td.ttl .st{display:block;font-size:7.5pt;color:var(--muted);margin-top:1px}
+td.barc{width:150px}
+td.barc .bar{display:inline-block;width:92px;height:8px;background:var(--soft);border-radius:4px;vertical-align:middle;margin-right:6px;overflow:hidden}
+td.barc .bar i{display:block;height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+td.barc b{font-weight:600}
+tr.hl td{background:var(--hl)}
+tr.hl td.ttl{font-weight:600}
+.note{font-size:8pt;color:var(--muted);margin-top:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.method{margin-top:auto;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:8.2pt;color:var(--ink2)}
+.method p+p{margin-top:4px}
+.method b{color:var(--ink)}
+.foot{font-size:7.5pt;color:var(--muted);border-top:1px solid var(--line);padding-top:6px;margin-top:10px;display:flex;justify-content:space-between}
+/* gender */
+.hero{display:flex;align-items:flex-end;gap:18px;margin:6px 0 10px}
+.hero .big{font-size:40pt;font-weight:800;letter-spacing:-.03em;line-height:1}
+.hero .big small{font-size:14pt;font-weight:600}
+.gb{margin-bottom:9px}
+.gbl{display:flex;justify-content:space-between;font-size:8.4pt;margin-bottom:3px}
+.stack{display:flex;height:16px;gap:2px}
+.stack i{display:block;height:100%}
+.stack i:first-child{border-radius:4px 0 0 4px}.stack i:last-child{border-radius:0 4px 4px 0}
+.stack .f{background:var(--fem)}.stack .m{background:var(--mal)}.stack .n{background:var(--neutral)}
+.gbv{display:flex;justify-content:space-between;font-size:8pt;color:var(--ink2);margin-top:2px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;font-size:8pt;color:var(--ink2);margin-bottom:8px;flex-wrap:wrap}
+.chart{width:100%;height:auto;display:block}
+.chart .axis{stroke:var(--line);stroke-width:1}
+.chart .m1{fill:var(--accent)}
+.chart .vl{font-size:9px;fill:var(--ink);text-anchor:middle;font-weight:600}
+.chart .tl{font-size:8.5px;fill:var(--muted);text-anchor:middle}
+.chart g:hover .m1,.chart g:hover rect{opacity:.75}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.names ul{list-style:none;font-size:8.6pt}
+.names li{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted var(--line)}
+.prog{height:10px;background:var(--soft);border-radius:5px;overflow:hidden;margin:6px 0 4px}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:0 5px 5px 0}
+/* caps */
+.verdict{border-radius:12px;background:var(--soft);padding:14px 16px;border-left:4px solid var(--caps);margin:12px 0 14px}
+.verdict .v{font-size:13pt;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+.verdict p{color:var(--ink2);font-size:9.6pt}
+.cr{display:grid;grid-template-columns:150px 1fr 46px;align-items:center;gap:8px;font-size:8.6pt;margin-bottom:6px}
+.crb{height:12px;background:var(--soft);border-radius:4px;overflow:hidden}
+.crb i{display:block;height:100%;background:var(--caps);border-radius:0 4px 4px 0}
+.cr b{text-align:right;font-weight:600}
+ol.ev{list-style:none;counter-reset:ev;font-size:9pt}
+ol.ev li{counter-increment:ev;position:relative;padding:0 0 9px 28px}
+ol.ev li::before{content:counter(ev);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:var(--soft);color:var(--ink2);font-size:8pt;font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.ev b{font-weight:600}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 2px}
+.flow div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:8.2pt;color:var(--ink2)}
+.flow div b{display:block;color:var(--ink);font-size:9.4pt;margin-bottom:2px}
+.flow .cap{border-color:var(--caps)}
+code{font-family:ui-monospace,Menlo,monospace;font-size:8pt;background:var(--soft);padding:0 4px;border-radius:4px}
+@page{size:A4;margin:0}
+@media print{
+  :root,:root[data-theme="dark"]{color-scheme:light;--bg:#fff;--paper:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#8a8984;--line:#e2e1dc;--soft:#f3f2ef;--fem:#eb6834;--mal:#2a78d6;--caps:#6250d6;--neutral:#c9c8c2;--accent:#2a78d6;--hl:#eef4fc}
+  body{padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{margin:0;box-shadow:none;width:210mm;height:297mm;min-height:0;overflow:hidden;page-break-after:always;break-after:page}
+  .page:last-child{page-break-after:auto;break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 ============ -->
+<section class="page">
+  <div class="top">
+    <div><div class="kicker">Електронні петиції до Кабінету Міністрів України</div></div>
+    <div class="src">Дані: petition.kmu.gov.ua (публічне API)<br>Зріз станом на {{NOW}}</div>
+  </div>
+  <div class="kicker">Автор: {{AUTHOR}}{{REGION}}</div>
+  <h1>Хто підписує петиції автора</h1>
+  <p class="lead">{{LEAD}}</p>
+
+  <div class="tiles">
+    <div class="tile"><b class="num">{{NPET}}</b><span>петицій автора</span></div>
+    <div class="tile"><b class="num">{{TOT}}</b><span>підписів загалом</span></div>
+    <div class="tile"><b class="num">{{UNIQ}}</b><span>унікальних людей</span></div>
+    <div class="tile"><b class="num">{{FALL}}%</b><span><i class="dot f"></i>підписів від жінок</span></div>
+    <div class="tile"><b class="num">{{UALL}}%</b><span><i class="dot c"></i>ПІБ написано КАПСОМ</span></div>
+  </div>
+
+  <h3>Усі петиції автора</h3>
+  <table>
+    <thead><tr><th>№</th><th>Петиція</th><th>Підписи</th><th class="r">Жінки</th><th class="r">КАПС</th></tr></thead>
+    <tbody>{{ROWS}}</tbody>
+  </table>
+  <p class="note">{{P1_NOTE}}</p>
+
+  <div class="method">
+    <div>
+      <p><b>Як рахували стать.</b> Стать визначали за <b>по батькові</b>: -ович/-йович означає чоловіка, -івна/-ївна означає жінку. Цей спосіб дав 100% покриття, нерозпізнаних не лишилось. Окремо перевірили, скільки можна визначити лише за прізвищем (див. стор. 2).</p>
+    </div>
+    <div>
+      <p><b>Звідки дані.</b> Сайт віддає список підписантів (ім'я, прізвище, по батькові, ID облікового запису, час підпису) через <code>/api/petitions/:id/signatories</code>. Усі {{TOT}} записів завантажено повністю. Для порівняння взято еталон: {{B_K}} великих петицій КМУ, стартували з {{B_SINCE}}, по {{B_RANGE}} тис. підписів кожна, разом {{B_N}}.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Петиції {{AUTHOR_SHORT}}: аналіз підписантів</span><span>1 / 3</span></div>
+</section>
+
+<!-- ============ PAGE 2 ============ -->
+<section class="page">
+  <div class="top">
+    <div><div class="kicker">Фокус · Петиція № {{T_CODE}}</div></div>
+    <div class="src">petition.kmu.gov.ua/petitions/{{T_ID}}<br>Збір підписів: {{T_START}} – {{T_END}}</div>
+  </div>
+  <h1 style="font-size:20pt">{{T_TITLE}}</h1>
+
+  <div class="grid2" style="margin-top:8px">
+    <div>
+      <h3>Хто підписав</h3>
+      <div class="hero">
+        <div><div class="big num" style="color:var(--fem)">{{T_FP}}<small>%</small></div><div class="muted" style="font-size:8.5pt"><i class="dot f"></i>жінки · {{T_F}}</div></div>
+        <div><div class="big num" style="color:var(--mal)">{{T_MP}}<small>%</small></div><div class="muted" style="font-size:8.5pt"><i class="dot m"></i>чоловіки · {{T_M}}</div></div>
+      </div>
+      <div class="legend"><span><i class="dot f"></i>Жінки</span><span><i class="dot m"></i>Чоловіки</span></div>
+      {{GBARS}}
+      <p class="note" style="margin-top:2px">{{G_NOTE}}</p>
+    </div>
+    <div>
+      <h3>А якщо судити лише за прізвищем?</h3>
+      <p style="font-size:9pt;color:var(--ink2);margin-bottom:8px">Прізвище розкриває стать лише тоді, коли воно змінюється за родом: <b>-ська/-ський</b>, <b>-ова/-ов</b>, <b>-іна/-ін</b>. Більшість українських прізвищ однакові для чоловіків і жінок: <b>-енко, -чук, -юк, -ко, -ишин, -ак</b>.</p>
+      <div class="stack" style="height:22px"><i class="f" style="width:{{S_WF}}%" title="Жіноча форма: {{S_F}}"></i><i class="m" style="width:{{S_WM}}%" title="Чоловіча форма: {{S_M}}"></i><i class="n" style="width:{{S_WN}}%" title="Невизначені: {{S_N}}"></i></div>
+      <div class="legend" style="margin-top:6px"><span><i class="dot f"></i>жіноча форма · {{S_F}}</span><span><i class="dot m"></i>чоловіча · {{S_M}}</span><span><i class="dot n"></i>не визначити · {{S_N}}</span></div>
+      <div class="tiles" style="grid-template-columns:1fr 1fr;margin:8px 0 0">
+        <div class="tile"><b class="num">{{S_NP}}%</b><span>прізвищ не дають визначити стать</span></div>
+        <div class="tile"><b class="num">{{S_FP}}%</b><span>жінок серед тих {{S_DP}}%, кого вдалось визначити. Збігається з точним результатом</span></div>
+      </div>
+      <p class="note">Перевірка за по батькові: усі {{S_OK}} визначень за прізвищем правильні. Але покриття становить лише ~{{S_DP}}%, тому основний метод — по батькові.</p>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:16px">
+    <div class="card">
+      <h3>Підписи по днях · {{T_ID}}</h3>
+      {{DAYS}}
+      <p class="note">{{DAYS_NOTE}}</p>
+    </div>
+    <div class="card">
+      <h3>Коли підписують (година, Київ)</h3>
+      {{HOURS}}
+      <p class="note">Розподіл підписів за годиною доби, час київський.</p>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <h3>До порогу 25 000</h3>
+      <div style="display:flex;justify-content:space-between;font-size:9pt"><b class="num">{{T_N}}</b><span class="muted num">{{PROGP}}%</span></div>
+      <div class="prog"><i style="width:{{PROG}}%"></i></div>
+      <p style="font-size:8.6pt;color:var(--ink2)">{{PROG_TEXT}}</p>
+      <p class="note">{{OVL_NOTE}}</p>
+    </div>
+    <div class="card">
+      <h3>Найчастіші імена</h3>
+      <div class="names">
+        <div><div class="legend" style="margin-bottom:3px"><span><i class="dot f"></i>Жінки</span></div><ul>{{FEM}}</ul></div>
+        <div><div class="legend" style="margin-bottom:3px"><span><i class="dot m"></i>Чоловіки</span></div><ul>{{MAL}}</ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції {{AUTHOR_SHORT}}: аналіз підписантів</span><span>2 / 3</span></div>
+</section>
+
+<!-- ============ PAGE 3 ============ -->
+<section class="page">
+  <div class="top">
+    <div><div class="kicker">Розслідування</div></div>
+    <div class="src">Петиція {{T_ID}} та еталонна вибірка<br>Специфікація BankID НБУ v2.0 (2024)</div>
+  </div>
+  <h1>Чому деякі прізвища написано КАПСОМ?</h1>
+  <p class="lead">Гіпотеза: люди з ПІБ великими літерами не мають електронного паспорта (Дії).</p>
+
+  <div class="verdict">
+    <div class="v">Причина не у відсутності е-паспорта, а у способі входу</div>
+    <p>Регістр ПІБ залежить від того, <b>яка система підтвердила особу</b> під час входу на сайт. КАПС означає, що ім'я передав <b>банк через BankID НБУ</b> або, можливо, сертифікат КЕП, а не Дія. Тобто людина підписала петицію не через Дія.Підпис. Чи має вона е-паспорт у Дії, з цих даних визначити неможливо. Більшість таких людей, найімовірніше, просто зручніше входить через банк.</p>
+  </div>
+
+  <div class="flow">
+    <div><b>Дія.Підпис</b>ПІБ із державних реєстрів у звичайному написанні: «Оксана Ковальчук»</div>
+    <div class="cap"><b>BankID НБУ</b>ПІБ з банківської системи. У специфікації НБУ приклад наведено капсом: «ПЕТРО ГЕРАЩЕНКО»</div>
+    <div><b>КЕП (файловий ключ)</b>ПІБ із сертифіката. Регістр залежить від центру сертифікації</div>
+  </div>
+  <p class="note" style="margin-bottom:14px">Усі три способи доступні лише через ID.GOV.UA. Сайт петицій бере ПІБ звідти, і змінити його в профілі неможливо: користувач вводить тільки email і телефон.</p>
+
+  <div class="grid2">
+    <div>
+      <h3>Докази</h3>
+      <ol class="ev">
+        <li><b>Користувач не впливає на написання ПІБ.</b> У коді сайту поле ПІБ показується лише для читання, редагувати можна тільки контакти. Отже, КАПС — це не вибір людини.</li>
+        <li><b>У BankID НБУ ПІБ показано капсом.</b> Приклад відповіді в офіційній специфікації: <code>"lastName":"ГЕРАЩЕНКО"</code>. Там само правило: якщо по батькові немає, передається <code>"n/a"</code>.</li>
+        <li>{{NA_NOTE}}</li>
+        <li>{{Q_NOTE}}</li>
+        <li>{{AGE_NOTE}}</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Частка КАПСУ: автор проти еталона</h3>
+      {{CAPSBARS}}
+      <p class="note" style="margin-bottom:14px">{{CAPS_NOTE}}</p>
+      <h3>КАПС і стать ({{T_ID}})</h3>
+      <div class="cr"><span class="crl"><i class="dot f"></i>Жінки</span><div class="crb"><i style="width:{{CAPS_FW}}%"></i></div><b class="num">{{CAPS_FP}}%</b></div>
+      <div class="cr"><span class="crl"><i class="dot m"></i>Чоловіки</span><div class="crb"><i style="width:{{CAPS_MW}}%"></i></div><b class="num">{{CAPS_MP}}%</b></div>
+      <p class="note">{{CAPSG_NOTE}}</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:auto">
+    <h3>Висновок</h3>
+    <p style="font-size:9.2pt;color:var(--ink2)">Гіпотезу «КАПС = немає е-паспорта» <b>дані не підтверджують і не спростовують</b>. Підтверджується вужче твердження: ці люди ввійшли на сайт <b>не через Дія.Підпис</b>, а через BankID (найімовірніше) або КЕП. Наявність Дії чи ID-картки за публічними даними перевірити неможливо: сайт не показує спосіб входу. Перевірити гіпотезу можна запитом на публічну інформацію до Мінцифри: розподіл підписів за способом автентифікації в ID.GOV.UA.</p>
+  </div>
+  <div class="foot"><span>Петиції {{AUTHOR_SHORT}}: аналіз підписантів</span><span>3 / 3</span></div>
+</section>
+
+<script>
+/* Вписує таблицю петицій на сторінці 1 в A4: ховає рядки знизу (крім фокусної петиції),
+   поки сторінка не перестане переповнюватися, і оновлює рядок «…і ще N». */
+(function(){
+  function plural(n,a,b,c){var m=n%10,h=n%100;return m==1&&h!=11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c);}
+  function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"\u202f");}
+  function fit(){
+    var page=document.querySelector(".page"); if(!page) return;
+    var w=page.getBoundingClientRect().width; if(w<600) return;           // мобільний перегляд — не чіпаємо
+    var limit=w*297/210+1, more=page.querySelector("tr.more"); if(!more) return;
+    var cnt=+more.dataset.count, sum=+more.dataset.sum;                 // вихідні значення з Python
+    var rows=[].slice.call(page.querySelectorAll("tr[data-n]:not([data-focus])")).reverse();
+    function upd(){
+      more.hidden=cnt===0;
+      more.querySelector(".cnt").textContent=cnt+" "+plural(cnt,"петиція","петиції","петицій");
+      more.querySelector(".sum").textContent=fmt(sum);
+    }
+    rows.forEach(function(r){r.hidden=false;}); upd();                   // fit() можна викликати повторно
+    for(var i=0;i<rows.length && page.scrollHeight>limit;i++){
+      rows[i].hidden=true; cnt++; sum+=+rows[i].dataset.n; upd();
+    }
+  }
+  fit();
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
+  // У друці текст ширшає/вужчає інакше, ніж на екрані, тому перевписуємо таблицю саме в print-верстці:
+  // обробник media query викликається вже після перемикання на @media print (beforeprint — ще ні).
+  var mq=window.matchMedia&&window.matchMedia("print");
+  if(mq){var h=function(m){if(m.matches)fit();}; mq.addEventListener?mq.addEventListener("change",h):mq.addListener(h);}
+  window.addEventListener("afterprint",fit);
+})();
+</script>
+</body>
+</html>
