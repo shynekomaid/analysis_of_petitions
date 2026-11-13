@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{DOC_TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="{{FONT_URL}}" rel="stylesheet">
+<style>
+{{CSS}}
+.chart .m2{fill:var(--caps)}
+.chart .f{fill:var(--fem)}
+.chart .vl.sm{font-size:7.5px}
+.chart .band{fill:var(--caps);opacity:.16}
+.chart .ln{fill:none;stroke:var(--caps);stroke-width:2;stroke-linejoin:round}
+.chart .refl{stroke:var(--ink2);stroke-width:1;stroke-dasharray:3 3}
+.chart .hit{fill:transparent}
+.chart .mk{font-size:8px;fill:var(--fem)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .lnf{fill:none;stroke:var(--fem);stroke-width:2;stroke-linejoin:round}
+.chart .hit:hover{fill:var(--caps);opacity:.35}
+td.hot{color:var(--caps);font-weight:700}
+td.hm{font-size:7.6pt;padding:3px 2px;text-align:center;border-bottom:1px solid var(--paper)}
+td.hm.diag{color:var(--muted);background:var(--soft)}
+td.hmt{font-size:7.8pt;line-height:1.15}
+tr.grp td{font-weight:600;padding-top:8px;border-bottom:none;font-size:8.2pt}
+.quote{border-left:3px solid var(--line);padding:4px 0 4px 10px;margin-bottom:7px}
+.qh{font-size:7.8pt;color:var(--muted);margin-bottom:2px}
+.qt{font-size:8.6pt;color:var(--ink2);font-style:italic}
+.tag{display:inline-block;font-style:normal;font-size:7.2pt;font-weight:600;padding:1px 6px;border-radius:8px;background:var(--soft);color:var(--ink)}
+.t-refuse{background:rgba(227,73,72,.15)}.t-support{background:rgba(27,175,122,.18)}.t-promise{background:rgba(42,120,214,.15)}
+ul.peaks{list-style:none;font-size:8.2pt;color:var(--ink2);margin-top:6px}
+ul.peaks li{padding:2px 0}
+.hb{display:grid;align-items:center;gap:8px;font-size:8.4pt;margin-bottom:5px}
+.hbl{line-height:1.2}
+.hbb{height:10px;background:var(--soft);border-radius:4px;overflow:hidden}
+.hbb i{display:block;height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+.hb b{text-align:right;font-weight:600}
+.hb .stack{height:10px}
+.tiles.t4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:640px){.tiles.t4{grid-template-columns:repeat(2,1fr)}}
+.tile small{display:block;font-size:7.5pt;color:var(--muted);margin-top:2px}
+.big2{font-size:30pt;font-weight:800;letter-spacing:-.03em;line-height:1}
+.names li{gap:6px}
+.names li i{font-style:normal;min-width:34px;text-align:right}
+.names li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.compact td{padding:4px 6px}
+.callout{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:9pt;color:var(--ink2)}
+.callout b{color:var(--ink)}
+p.lead{margin-bottom:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media (max-width:640px){.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ============ 1. ЗАГАЛЬНА КАРТИНА ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Електронні петиції до Кабінету Міністрів України</div>
+    <div class="src">Дані: petition.kmu.gov.ua (публічне API)<br>Зріз станом на {{NOW}}</div>
+  </div>
+  <div class="kicker">Огляд усіх петицій · {{Y0}}–{{Y1}}</div>
+  <h1>Петиції до Кабміну: що стається з ними насправді</h1>
+  <p class="lead">За {{Y0}}–{{Y1}} роки на сайт подали {{N}} петицій, і вони зібрали {{SIG}} млн підписів. Поріг у 25 000 подолали лише {{PASSED}} петицій ({{PASSED_P}}%). У {{U100_P}}% петицій менше ніж 100 підписів.</p>
+
+  <div class="tiles">
+    <div class="tile"><b class="num">{{N}}</b><span>петицій</span></div>
+    <div class="tile"><b class="num">{{SIG}} млн</b><span>підписів</span></div>
+    <div class="tile"><b class="num">{{MED}}</b><span>медіана підписів на петицію</span></div>
+    <div class="tile"><b class="num">{{PASSED_P}}%</b><span><i class="dot c"></i>набрали 25 000 ({{PASSED}})</span></div>
+    <div class="tile"><b class="num">{{ANSWERED}}</b><span>відповідей уряду</span></div>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <h3>Петицій за рік</h3>
+      {{YEARS_SVG}}
+    </div>
+    <div class="card">
+      <h3>Набрали 25 000</h3>
+      {{PASS_SVG}}
+    </div>
+    <div class="card">
+      <h3>Підписів на петицію</h3>
+      {{BUCKETS}}
+    </div>
+  </div>
+  <p class="note">Рік — за датою старту збору підписів; платформу оновили у травні 2023 року. {{PASS_NOTE}} {{UNSUP_P}}% петицій закрилися, не набравши порогу, ще {{ACTIVE}} збирають підписи зараз.</p>
+
+  <h3 style="margin-top:14px">Топ-10 за підписами</h3>
+  <table class="compact"><tbody>{{TOP_ROWS}}</tbody></table>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>1 / 22</span></div>
+</section>
+
+<!-- ============ 2. ВІДПОВІДІ І СТРОКИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Відповіді і строки</div>
+    <div class="src">Відповіді: поле answeredAt<br>Досягнення порогу: supportedAt / endedAt</div>
+  </div>
+  <h1>Скільки чекати на відповідь</h1>
+  <p class="lead">Відповідь отримали {{ANS_OF_PASSED}} петицій, що набрали 25 000. Від набору порогу до відповіді в середньому минає два тижні. {{ANS_BELOW_NOTE}}</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{D_MED}} дн.</b><span>медіана від 25 000 до відповіді</span><small>половина — від {{D_Q1}} до {{D_Q3}} днів</small></div>
+    <div class="tile"><b class="num">{{D_MAX}} дн.</b><span>найдовше очікування</span><small>серед {{D_N}} відповідей з відомими датами</small></div>
+    <div class="tile"><b class="num">{{T_MED}} дн.</b><span>медіана збору 25 000</span><small>половина — від {{T_Q1}} до {{T_Q3}} днів</small></div>
+    <div class="tile"><b class="num">{{T_MIN}} дн.</b><span>найшвидший збір 25 000</span><small>серед {{T_N}} петицій нової платформи</small></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Днів від 25 000 до відповіді</h3>
+      {{DELAY_SVG}}
+      <p class="note">Кількість відповідей у кожному інтервалі. 14 календарних днів — це приблизно 10 робочих.</p>
+    </div>
+    <div class="card">
+      <h3>Днів від старту до 25 000</h3>
+      {{T25_SVG}}
+      <p class="note">Збір триває до 3 місяців. Частина петицій набирає поріг за перший тиждень, частина — в останні дні.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:14px">Які теми проходять поріг</h3>
+  <table class="compact">
+    <thead><tr><th>Категорія</th><th class="r">Петицій</th><th class="r">25 000+</th><th class="r">Успіх</th><th class="r">Сер. підписів</th></tr></thead>
+    <tbody>{{CAT_ROWS}}</tbody>
+  </table>
+  <p class="note">Топ-10 категорій (з 30+ петиціями) за часткою тих, що набрали 25 000.</p>
+
+  <div class="callout" style="margin-top:auto">{{AWAITING}} Підписант відповідей (поле «міністр»): {{ANS_BY}}. Медіанна довжина тексту відповіді — {{ALEN}} символів.</div>
+  <div class="foot"><span>Петиції до КМУ: загальний огляд</span><span>2 / 22</span></div>
+</section>
+
+<!-- ============ 3. АВТОРИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Автори петицій</div>
+    <div class="src">Стать — за по батькові автора<br>Регіони — лише нова платформа</div>
+  </div>
+  <h1>Хто пише петиції</h1>
+  <p class="lead">{{LEAD3}}</p>
+
+  <div class="grid2">
+    <div>
+      <h3>Автори і підписанти</h3>
+      <div class="gb"><div class="gbl"><span>Автори петицій</span><span class="muted">{{A_F}} жінок · {{A_M}} чоловіків</span></div>{{A_STACK}}<div class="gbv"><span>{{A_FP}}%</span><span>{{A_MP}}%</span></div></div>
+      <div class="gb"><div class="gbl"><span>Підписи (нова платформа)</span><span class="muted">{{SROWS}} млн</span></div>{{S_STACK}}<div class="gbv"><span>{{SFP}}%</span><span>{{SMP}}%</span></div></div>
+      <div class="legend"><span><i class="dot f"></i>Жінки</span><span><i class="dot m"></i>Чоловіки</span></div>
+      <div class="tiles" style="grid-template-columns:1fr 1fr;margin:10px 0 0">
+        <div class="tile"><b class="num">{{PF_RATE}}%</b><span><i class="dot f"></i>петицій авторок набрали 25 000 ({{PF_N}})</span></div>
+        <div class="tile"><b class="num">{{PM_RATE}}%</b><span><i class="dot m"></i>петицій авторів набрали 25 000 ({{PM_N}})</span></div>
+      </div>
+      <p class="note">Ще {{A_ORG}} петиції подали громадські організації. Унікальних авторів: {{A_UNIQ}}.</p>
+    </div>
+    <div class="card">
+      <h3>Частка жінок серед авторів, за роками</h3>
+      {{FA_SVG}}
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div>
+      <h3>Рекордсмени за створеними петиціями</h3>
+      <table class="compact">
+        <thead><tr><th>Автор</th><th class="r">Петицій</th><th class="r">Підписів</th><th class="r">25 000+</th></tr></thead>
+        <tbody>{{PROLIFIC}}</tbody>
+      </table>
+      <p class="note">Десятеро найактивніших авторів подали {{TOP10_AUTH}} петицій, тобто {{TOP10_AUTH_P}}% усіх. {{PROL_NOTE}}</p>
+    </div>
+    <div>
+      <h3>Регіон автора (нова платформа)</h3>
+      {{REGIONS}}
+      <p class="note">Регіон, вказаний в обліковому записі автора: {{REG_TOTAL}} петицій.</p>
+    </div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>3 / 22</span></div>
+</section>
+
+<!-- ============ 4. ПІДПИСАНТИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Підписанти · нова платформа (з травня 2023)</div>
+    <div class="src">{{SP}} петицій · {{SROWS}} млн підписів<br>Стара платформа списків підписантів не публікує</div>
+  </div>
+  <h1>Хто підписує петиції</h1>
+
+  <div class="tiles">
+    <div class="tile"><b class="num">{{UNIQ}} млн</b><span>унікальних підписантів</span></div>
+    <div class="tile"><b class="num">{{SFP}}%</b><span><i class="dot f"></i>підписів від жінок</span></div>
+    <div class="tile"><b class="num">{{UFP}}%</b><span><i class="dot f"></i>жінок серед підписантів</span><small>кожну людину враховано раз</small></div>
+    <div class="tile"><b class="num">{{CAPS_P}}%</b><span><i class="dot c"></i>ПІБ записано КАПСОМ</span></div>
+    <div class="tile"><b class="num">{{AVG_PER}}</b><span>петиції на підписанта в середньому</span></div>
+  </div>
+
+  <h3>Частка жінок серед підписів за темою</h3>
+  {{CAT_WOMEN}}
+  <p class="note">Категорії з 20 000+ підписами. {{CW_NOTE}}</p>
+
+  <div class="grid2" style="margin-top:12px">
+    <div class="callout">
+      Петиції <b>авторок</b> підписують на <b>{{WF}}%</b> жінки, петиції <b>авторів</b> — на <b>{{WM}}%</b>. {{WBA_NOTE}}
+    </div>
+    <div>
+      <table class="compact">
+        <thead><tr><th>Рік підпису</th><th class="r">Підписів</th><th class="r">Жінки</th><th class="r">КАПС</th></tr></thead>
+        <tbody>{{BY_YEAR}}</tbody>
+      </table>
+    </div>
+  </div>
+  <p class="note">«n/a» замість по батькові (ознака BankID, часто в іноземців): {{NA}} осіб. Чому частину ПІБ записано КАПСОМ, пояснено у звіті petistat: це вхід через BankID або КЕП, а не через Дія.Підпис. {{MISSING}}</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>4 / 22</span></div>
+</section>
+
+<!-- ============ 5. ІМЕНА ТА АКТИВНІСТЬ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Імена та активність</div>
+    <div class="src">Імена рахуються по унікальних людях<br>Час — київський</div>
+  </div>
+  <h1>{{H5}}</h1>
+
+  <div class="grid3">
+    <div><h3><i class="dot f"></i>Жіночі імена</h3><div class="names"><ul>{{NAMES_F}}</ul></div></div>
+    <div><h3><i class="dot m"></i>Чоловічі імена</h3><div class="names"><ul>{{NAMES_M}}</ul></div></div>
+    <div><h3>Прізвища</h3><div class="names"><ul>{{SURNAMES}}</ul></div></div>
+  </div>
+  <p class="note">Відсоток — частка серед жінок, серед чоловіків і серед усіх підписантів відповідно.</p>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <h3>Підписи за годиною доби</h3>
+      {{HOURS_SVG}}
+      <p class="note">Пік о {{PEAK_H}}. {{NIGHT_NOTE}}</p>
+    </div>
+    <div class="card">
+      <h3>Підписи за днем тижня</h3>
+      {{WD_SVG}}
+      <p class="note">Виділено найактивніший день. {{WEEKEND_NOTE}}</p>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div>
+      <h3>Скільки петицій підписує одна людина</h3>
+      {{REPEAT}}
+      <div class="callout" style="margin-top:8px">
+        <b>{{ONE_P}}%</b> людей підписали лише одну петицію. Найактивніший 1% підписантів дає <b>{{TOP1}}%</b> усіх підписів, а найактивніші 10% — <b>{{TOP10}}%</b>.
+      </div>
+    </div>
+    <div>
+      <h3>Рекордсмени за підписами</h3>
+      <table class="compact">
+        <thead><tr><th>#</th><th>Підписант</th><th class="r">Петицій</th><th class="r">Тем</th></tr></thead>
+        <tbody>{{TOP_SIGNERS}}</tbody>
+      </table>
+      <p class="note">Ім'я та ініціали (прізвище, по батькові). Рекорд — {{RMAX}} підписаних петицій.</p>
+    </div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>5 / 22</span></div>
+</section>
+
+<!-- ============ 6. ПЕРША ДОБА І МОДЕРАЦІЯ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Динаміка збору · нова платформа</div>
+    <div class="src">Завершені петиції: {{E_FIN}}<br>Відлік — від моменту публікації (startedAt)</div>
+  </div>
+  <h1>Перша доба майже все вирішує</h1>
+  <p class="lead">Петиції, що набирають 25 000, зазвичай стартують швидко. Серед петицій із 1 000+ підписів за першу добу поріг подолали {{E_HIGH_P}}%, а серед тих, що мали менше 100, — лише {{E_LOW_P}}%.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{E_HIGH_P}}%</b><span>шанс при 1 000+ підписів за першу добу</span><small>{{E_HIGH_N}} петицій</small></div>
+    <div class="tile"><b class="num">{{E_LOW_P}}%</b><span>шанс при &lt;100 підписів за першу добу</span><small>{{E_LOW_N}} петицій</small></div>
+    <div class="tile"><b class="num">{{E_MED_PASS}}</b><span>медіана першої доби в тих, що набрали 25 000</span><small>у решти — {{E_MED_FAIL}}</small></div>
+    <div class="tile"><b class="num">{{E_LATE}}</b><span>«пізніх стартів»</span><small>набрали 25 000, маючи &lt;10 підписів за першу добу</small></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Шанс набрати 25 000 за підписами першої доби</h3>
+      {{EARLY_SVG}}
+      <table class="compact" style="margin-top:6px">
+        <thead><tr><th>За 24 год</th><th class="r">Петицій</th><th class="r">25 000+</th><th class="r">Шанс</th></tr></thead>
+        <tbody>{{EARLY_ROWS}}</tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Як набирають 25 000 успішні петиції</h3>
+      {{CURVE_SVG}}
+      <div class="legend" style="margin-top:4px"><span><i class="dot c"></i>медіана</span><span style="opacity:.7">▇ половина петицій (25–75%)</span></div>
+      <p class="note">Дні від публікації, {{CURVES_N}} петицій. На 10-й день медіанна успішна петиція має {{D10}} підписів ({{D10_P}}% порогу). Далі криві розходяться: частина добирає поріг в останні тижні.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:14px">Модерація: від створення до публікації</h3>
+  <div class="grid2">
+    <div class="card">
+      {{MOD_SVG}}
+      <p class="note">{{M_N}} петицій нової платформи. Медіана — {{M_MED}} год, у 75% петицій — до {{M_Q3}} год, найдовше — {{M_MAX}} дн. Для петицій, що потім набрали 25 000, медіана {{M_PASS}} год, для решти — {{M_FAIL}} год.</p>
+    </div>
+    <div>
+      <table class="compact">
+        <thead><tr><th>Рік</th><th class="r">Петицій</th><th class="r">Медіана</th></tr></thead>
+        <tbody>{{MOD_YEARS}}</tbody>
+      </table>
+      <p class="note">Видно лише опубліковані петиції: відхилені модерацією сайт не показує, тож скільки їх і скільки часу займає відмова, невідомо.</p>
+    </div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>6 / 22</span></div>
+</section>
+
+<!-- ============ 7. НОВАЧКИ І ПЕТИЦІЇ-МАГНІТИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Новачки · нова платформа</div>
+    <div class="src">«Привела» — перший підпис людини на платформі<br>Рейтинг — петиції, опубліковані з 01.08.2023</div>
+  </div>
+  <h1>Петиції, що приводять нових людей</h1>
+  <p class="lead">Для кожного підписанта знайдено його найперший підпис. Петиція, з якої він почав, вважається такою, що привела його на платформу. Так прийшли всі {{N_ENTRIES}} людей, а ці перші підписи становлять {{N_ENTRY_P}}% усіх підписів.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{N_ENTRY_P}}%</b><span>підписів — перші в житті людини на платформі</span></div>
+    <div class="tile"><b class="num">{{N_PASS_SHARE}}%</b><span>новачків у типовій петиції з 25 000+</span><small>медіана</small></div>
+    <div class="tile"><b class="num">{{N_SMALL_SHARE}}%</b><span>новачків у петиції на 100–1 000 підписів</span><small>медіана</small></div>
+    <div class="tile"><b class="num">{{ACC_MED}}</b><span>новачків за місяць</span><small>медіана; пік — {{ACC_PEAK_N}} ({{ACC_PEAK}})</small></div>
+  </div>
+
+  <h3>Петиції-магніти: скільки людей прийшли на платформу через них</h3>
+  <table class="compact">
+    <thead><tr><th>№</th><th>Петиція</th><th class="r">Підписів</th><th class="r">Привела</th><th class="r">Частка</th></tr></thead>
+    <tbody>{{MAG_ROWS}}</tbody>
+  </table>
+  <p class="note">«Частка» — скільки підписантів петиції до цього не підписували нічого на платформі. Петиції з травня–липня 2023 року виключено: тоді новачками були всі.</p>
+
+  <div class="card" style="margin-top:12px">
+    <h3>Скільки людей уперше підписали петицію, за місяць</h3>
+    {{ACC_SVG}}
+    <ul class="peaks">{{ACC_NOTES}}</ul>
+    <p class="note">З серпня 2023 року. Виділено три найбільші сплески та петицію, яка того місяця привела найбільше новачків. Підписи осі — січень кожного року.</p>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>7 / 22</span></div>
+</section>
+
+<!-- ============ 8. СИГНАЛИ АНОМАЛІЙ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Сигнали аномалій · петиції з 1 000+ підписів</div>
+    <div class="src">{{AN_N}} петицій нової платформи<br>Поріг «незвично» — 95-й перцентиль</div>
+  </div>
+  <h1>Незвичні візерунки збору підписів</h1>
+  <p class="lead">Для кожної петиції пораховано чотири сигнали. Значення, вище за 95% інших петицій, виділено кольором. Це <b>не доказ накрутки</b>: вірусні петиції часто приводять тисячі новачків, а нічні піки бувають після публікації в медіа. Але збіг кількох сигналів — привід придивитися.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{P95_PEAK}}%</b><span>підписів за найщільніші 10 хв</span><small>поріг; типово — {{MED_PEAK}}%</small></div>
+    <div class="tile"><b class="num">{{P95_NIGHT}}%</b><span>підписів уночі (00–06)</span><small>поріг; типово — {{MED_NIGHT}}%</small></div>
+    <div class="tile"><b class="num">{{P95_NEW}}%</b><span>нових облікових записів</span><small>поріг; типово — {{MED_NEW}}%</small></div>
+    <div class="tile"><b class="num">{{P95_ONCE}}%</b><span>людей, що більше нічого не підписали</span><small>поріг; типово — {{MED_ONCE}}%</small></div>
+  </div>
+
+  <table class="compact">
+    <thead><tr><th>№</th><th>Петиція</th><th class="r">Підписів</th><th class="r">10 хв</th><th class="r">Ніч</th><th class="r">Нові</th><th class="r">Разові</th><th class="r">Сигн.</th></tr></thead>
+    <tbody>{{AN_ROWS}}</tbody>
+  </table>
+  <p class="note">Два і більше сигналів одночасно мають {{AN_MULTI}} петицій з {{AN_N}}. «Нові» — облікові записи, створені після дня старту петиції (оцінка за ID). «Разові» — люди, для яких ця петиція є єдиним підписом на платформі.</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>8 / 22</span></div>
+</section>
+
+<!-- ============ 9. ПЕРЕТИН АУДИТОРІЙ ТЕМ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Перетин аудиторій тем · нова платформа</div>
+    <div class="src">Рядок → стовпець: яка частка людей,<br>що підписували тему рядка, підписували й тему стовпця</div>
+  </div>
+  <h1>Хто підписує про одне — що підписує ще</h1>
+  <p class="lead">{{ONE_THEME}}% людей підписують петиції лише однієї теми. Найсильніший зв'язок — {{BEST_PAIR}} людей першої теми підписували й другу.</p>
+
+  <table class="compact heat">
+    <thead><tr><th>#</th><th>Тема (рядок)</th><th class="r">Людей</th>{{HEAT_HEAD}}</tr></thead>
+    <tbody>{{HEAT}}</tbody>
+  </table>
+  <p class="note">10 тем з найбільшою кількістю підписантів; номери стовпців відповідають номерам рядків. Значення — % людей теми рядка. Матриця несиметрична: великі теми «поглинають» малі.</p>
+
+  <div class="grid2" style="margin-top:12px">
+    <div>
+      <h3>Скільки різних тем підписує людина</h3>
+      {{BREADTH}}
+    </div>
+    <div class="callout">Рекордсмени за підписами (стор. 5) підписують петиції <b>усіх тем</b>. Решта ж здебільшого лишається в одній-двох темах: петиції для них — реакція на конкретну проблему, а не звичка.</div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>9 / 22</span></div>
+</section>
+
+<!-- ============ 10. ЗАГОЛОВКИ І ТЕКСТИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Заголовки і тексти · завершені петиції</div>
+    <div class="src">Успіх — частка тих, що набрали 25 000<br>Активні петиції не враховано</div>
+  </div>
+  <h1>Чи допомагає КАПС і знак оклику</h1>
+  <p class="lead">Знак оклику в заголовку мають {{R_EXCL_N}} петицій, з них поріг набрали {{R_EXCL}}. Заголовки КАПСОМ проходять у {{R_CAPS_Y}}% випадків проти {{R_CAPS_N}}% у звичайних. Сильніше на успіх впливає обсяг тексту: коротка петиція (до 1 тис. символів) — {{R_SHORT}}%, розгорнута (3–6 тис.) — {{R_LONG}}%.</p>
+
+  <div class="grid2">
+    <div>
+      <table class="compact">
+        <thead><tr><th>Ознака</th><th class="r">Петицій</th><th class="r">25 000+</th><th class="r">Успіх</th></tr></thead>
+        <tbody>{{FEATS}}</tbody>
+      </table>
+      <p class="note">Кореляція, не причина: розгорнуті тексти частіше пишуть організовані ініціативні групи, які й так уміють збирати підписи.</p>
+    </div>
+    <div>
+      <h3>Слова в заголовках петицій, що набрали 25 000</h3>
+      <div class="names"><ul>{{WORDS_PASS}}</ul></div>
+      <p class="note">Число — у скількох заголовках трапляється слово; «×» — у скільки разів частіше, ніж у середньому по сайту.</p>
+      <h3 style="margin-top:10px">Найчастіші слова всіх заголовків</h3>
+      <div class="names"><ul>{{WORDS_ALL}}</ul></div>
+    </div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>10 / 22</span></div>
+</section>
+
+<!-- ============ 11. ЗМІСТ ВІДПОВІДЕЙ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Що відповідає уряд</div>
+    <div class="src">{{ANS_TOTAL}} відповідей з текстом<br>Класифікація — за ключовими фразами</div>
+  </div>
+  <h1>{{H11}}</h1>
+  <p class="lead">Відповіді дипломатичні: прямих відмов майже немає. Тексти розкладено за ключовими фразами у порядку пріоритету: відмова → підтримка → обіцянка опрацювати → лише роз'яснення. Це груба евристика, тому нижче наведено цитати для перевірки.</p>
+
+  {{ANS_BARS}}
+
+  <h3 style="margin-top:14px">Приклади (по дві цитати на клас)</h3>
+  {{QUOTES}}
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>11 / 22</span></div>
+</section>
+
+<!-- ============ 12. СЕЗОННІСТЬ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Сезонність і події</div>
+    <div class="src">Петиції — за датою старту<br>Частка жінок — нова платформа, місяці з 5 000+ підписів</div>
+  </div>
+  <h1>Коли пишуть і підписують</h1>
+
+  <div class="card">
+    <h3>Петицій за місяць</h3>
+    {{PET_SVG}}
+  </div>
+  <h3 style="margin-top:12px">П'ять найактивніших місяців і їхні найбільші петиції</h3>
+  <table class="compact">
+    <thead><tr><th>Місяць</th><th class="r">Петицій</th><th>Найбільша петиція місяця</th><th class="r">Підписів</th></tr></thead>
+    <tbody>{{SPIKE_ROWS}}</tbody>
+  </table>
+
+  <div class="card" style="margin-top:12px">
+    <h3>Частка жінок серед підписів за місяць</h3>
+    {{WSH_SVG}}
+    <p class="note">Шкала від {{W_LO}}%, не від нуля. Мінімум — {{W_MIN}}, максимум — {{W_MAX}}. <span class="screen-only">Наведіть на точку, щоб побачити місяць.</span></p>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <h3>Петицій у середньому за календарний місяць</h3>
+      {{CAL_SVG}}
+    </div>
+    <div class="callout">{{CAL_NOTE}} Сплески окремих місяців зазвичай пов'язані з однією резонансною темою (див. таблицю вище).</div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>12 / 22</span></div>
+</section>
+
+<!-- ============ 13. СЕРІЙНІ АВТОРИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Серійні автори</div>
+    <div class="src">Схожість заголовків — спільні слова (Жаккар ≥ {{S_SIM}}%)<br>Автори — фізичні особи, усі роки</div>
+  </div>
+  <h1>Більше петицій — менше шансів</h1>
+  <p class="lead">Петиції авторів, які подали одну-єдину петицію, набирають 25 000 у {{S_ONE_P}}% випадків. У тих, хто подав 10 і більше, — {{S_MANY_P}}%. Повтори не допомагають: {{S_REPEATS}} разів автор подавав петицію, схожу на свою попередню (у {{S_REP_FAIL}} випадках — після того, як попередня провалилася), і поріг набрали {{S_REP_PASSED}} з них.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Шанс набрати 25 000 за «досвідом» автора</h3>
+      {{S_BSVG}}
+    </div>
+    <div>
+      <table class="compact">
+        <thead><tr><th>Петицій в автора</th><th class="r">Авторів</th><th class="r">Петицій</th><th class="r">25 000+</th><th class="r">Шанс</th></tr></thead>
+        <tbody>{{S_BROWS}}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="margin-top:12px">Хто найчастіше повторюється</h3>
+  <table class="compact">
+    <thead><tr><th>Автор</th><th class="r">Петицій</th><th class="r">Повторів</th><th class="r">Найдовша серія</th><th>Тема серії (перша петиція)</th></tr></thead>
+    <tbody>{{S_TOP}}</tbody>
+  </table>
+
+  <h3 style="margin-top:12px">Однакові заголовки від різних авторів</h3>
+  <table class="compact">
+    <thead><tr><th>Заголовок</th><th class="r">Петицій</th><th class="r">Авторів</th><th class="r">Підписів разом</th><th class="r">Найбільша</th></tr></thead>
+    <tbody>{{S_CLONES}}</tbody>
+  </table>
+  <p class="note">Груп з 3+ однаковими заголовками від 2+ авторів: {{S_CLONE_G}} ({{S_CLONE_P}} петицій). Однакові заголовки порівнюються без урахування регістру та розділових знаків. Більшість таких груп — прохання присвоїти звання Героя України, а це не до Кабміну (див. стор. 15).</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>13 / 22</span></div>
+</section>
+
+<!-- ============ 14. РЕГІОНИ НА ДУШУ НАСЕЛЕННЯ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Регіони авторів на душу населення · нова платформа</div>
+    <div class="src">Населення — Держстат, оцінка на 01.01.2022<br>Регіон — з облікового запису автора</div>
+  </div>
+  <h1>Звідки пишуть петиції</h1>
+  <p class="lead">На 100 тис. жителів найбільше авторів у регіоні «{{R_TOP}}» — {{R_TOP_V}}, у {{R_X}} раза більше, ніж у типовому регіоні ({{R_MED}}). Рахуємо людей, а не петиції: інакше рейтинг перекошують серійні автори. Найбільший розрив — «{{R_GAP}}»: {{R_GAP_A}} автора, але {{R_GAP_P}} петиції на 100 тис.</p>
+
+  <div class="grid2">
+    <div>
+      <h3>Авторів на 100 тис. жителів</h3>
+      {{R_BARS}}
+    </div>
+    <div>
+      <table class="compact">
+        <thead><tr><th>Регіон</th><th class="r">Млн</th><th class="r">Авт.</th><th class="r">/100 тис.</th><th class="r">Пет.</th><th class="r">/100 тис.</th><th class="r">25k+</th></tr></thead>
+        <tbody>{{R_ROWS}}</tbody>
+      </table>
+    </div>
+  </div>
+  <p class="note" style="margin-top:10px"><b>Важливо:</b> {{R_NOTE}} Через окупацію та переміщення людей показники Донецької, Луганської, Херсонської, Запорізької та Харківської областей занижені, а регіонів, що прийняли ВПО, — завищені. Регіон автор вказує сам. Петицій з регіонами поза таблицею (АР Крим): {{R_OTHER}}.</p>
+  <p class="note">Джерело населення: {{R_SRC}}.</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>14 / 22</span></div>
+</section>
+
+<!-- ============ 15. НЕ ТА АДРЕСА ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Не та адреса · компетенція Президента</div>
+    <div class="src">Звання, нагороди, помилування — указом Президента<br>Класифікація — за заголовком</div>
+  </div>
+  <h1>Петиції, які мали піти Президенту</h1>
+  <p class="lead">Присвоєння звань і державних нагород конкретним людям, а також помилування — це рішення Президента (ст. 106 Конституції, Закон «Про державні нагороди України»). Такі петиції слід подавати на <b>petition.president.gov.ua</b>, а на сайт Кабміну їх надійшло {{W_N}}, тобто {{W_P}}% усіх петицій.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{W_N}}</b><span>петицій не за адресою</span><small>{{W_P}}% усіх</small></div>
+    <div class="tile"><b class="num">{{W_SIG}}</b><span>підписів під ними</span><small>медіана — {{W_MED}} на петицію</small></div>
+    <div class="tile"><b class="num">{{W_OK}}</b><span>набрали 25 000</span><small>{{W_OK_LIST}}</small></div>
+    <div class="tile"><b class="num">{{W_PEAK_N}}</b><span>у {{W_PEAK_Y}} році</span><small>{{W_PEAK_P}}% петицій того року</small></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Петицій не за адресою за рік</h3>
+      {{W_YSVG}}
+      <p class="note">{{W_YNOTE}}</p>
+    </div>
+    <div>
+      <h3>Про що просять</h3>
+      {{W_TBARS}}
+      <div style="margin-top:10px">{{W_QUOTE}}</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:12px">Найбільші з них</h3>
+  <table class="compact"><tbody>{{W_ROWS}}</tbody></table>
+  <p class="note">Петиції, що набрали 25 000, Кабмін розглянув, але рішення все одно ухвалює Президент: уряд може лише внести подання, і то тільки щодо власних посадовців. Не враховано петиції про запровадження нових нагород (це закон, тобто Верховна Рада) та про виплати нагородженим (легітимна тема для Кабміну). Сюди не потрапили неоднозначні теми, як-от громадянство, мобілізація чи воєнний стан.</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>15 / 22</span></div>
+</section>
+
+<!-- ============ 16. ХТО «РОЗГАНЯЄ» ПЕТИЦІЇ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Активні підписанти і час публікації · нова платформа</div>
+    <div class="src">«Активні» — 10+ підписаних петицій<br>Час — київський, startedAt</div>
+  </div>
+  <h1>Хто «розганяє» петиції і коли їх публікують</h1>
+  <p class="lead">Активні підписанти не підписують першими: у середньому їхній підпис з'являється на {{B_LAG_H}}-й день після публікації, а решти — на {{B_LAG_R}}-й. Зате саме вони — основна аудиторія малих петицій: у петиціях до 100 підписів їм належить {{B_SMALL10}}% підписів першої доби.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{B_ALL10}}%</b><span>усіх підписів — від людей з 10+ петиціями</span></div>
+    <div class="tile"><b class="num">{{B_ALL50}}%</b><span>— від людей з 50+ петиціями</span></div>
+    <div class="tile"><b class="num">{{B_SMALL10}}%</b><span>першої доби малих петицій — активні</span><small>з них {{B_SMALL50}}% — люди з 50+ петиціями</small></div>
+    <div class="tile"><b class="num">{{B_LAG_H}} дн.</b><span>медіана до підпису людини з 50+ петиціями</span><small>у решти — {{B_LAG_R}} дн.</small></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Частка активних серед підписів першої доби</h3>
+      {{B_SVG}}
+      <p class="note">За розміром петиції. Що більша петиція, то менше важать «постійні» підписанти: великі збори роблять нові люди.</p>
+    </div>
+    <div class="card">
+      <h3>Шанс набрати 25 000 за годиною публікації</h3>
+      {{PT_SVG}}
+      <p class="note">Найкраще — {{PT_BEST}} ({{PT_BEST_P}}%), найгірше — {{PT_WORST}} ({{PT_WORST_P}}%). Час публікації визначає модерація, а не автор, тому це радше спостереження, ніж порада.</p>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <table class="compact"><thead><tr><th>Година</th><th class="r">Петицій</th><th class="r">25k+</th><th class="r">Шанс</th><th class="r">1-ша доба</th></tr></thead><tbody>{{PT_HROWS}}</tbody></table>
+    <table class="compact"><thead><tr><th>День</th><th class="r">Петицій</th><th class="r">25k+</th><th class="r">Шанс</th><th class="r">1-ша доба</th></tr></thead><tbody>{{PT_WROWS}}</tbody></table>
+  </div>
+  <p class="note">«1-ша доба» — медіана підписів за перші 24 години. Лише завершені петиції нової платформи. Модерація публікує петиції майже лише в робочий час: {{PT_WORK_H}}% — з 06:00 до 18:00, {{PT_WORK_D}}% — у будні.</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>16 / 22</span></div>
+</section>
+
+<!-- ============ 17. ОРГАНІЗОВАНІ ГРУПИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Координовані групи підписантів · нова платформа</div>
+    <div class="src">Пара: разом ≤{{C_WIN}} хв у {{C_MINCO}}+ петиціях<br>і ≥{{C_SHARE}}% петицій менш активного з двох</div>
+  </div>
+  <h1>Ті, хто підписує разом</h1>
+  <p class="lead">Серед людей з {{C_MINSEEN}}+ підписами знайдено {{C_PAIRS}} пар, які раз у раз підписують ті самі петиції з різницею в кілька хвилин. Пари об'єднуються в {{C_GROUPS}} груп ({{C_ACC}} облікових записів). Лише {{C_SAME}}% пар мають однакове прізвище, тож родинами (один пристрій, спільний вечір) це пояснюється лише частково.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{C_GROUPS}}</b><span>груп</span></div>
+    <div class="tile"><b class="num">{{C_ACC}}</b><span>облікових записів у групах</span></div>
+    <div class="tile"><b class="num">{{C_SAME}}%</b><span>пар з однаковим прізвищем</span></div>
+    <div class="tile"><b class="num">{{C_PETS}}</b><span>петицій, де разом підписали 2+ учасники групи</span></div>
+  </div>
+
+  <div class="grid2">
+    <div><h3>Розмір груп</h3>{{C_SIZES}}</div>
+    <div class="callout"><b>Як читати.</b> Група — це не доказ накрутки. Так виглядають і родини, і колеги, яким скинули посилання в чат, і активісти однієї ініціативи. Але великі групи, що разом підписують серію петицій одного автора за лічені хвилини, — це організована підтримка. Імена учасників не наводимо.</div>
+  </div>
+
+  <h3 style="margin-top:12px">Найбільші групи</h3>
+  <table class="compact">
+    <thead><tr><th class="r">Учасн.</th><th class="r">Їхніх підписів</th><th class="r">Спільних петицій</th><th>Петиції, де група була найактивнішою</th></tr></thead>
+    <tbody>{{C_ROWS}}</tbody>
+  </table>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>17 / 22</span></div>
+</section>
+
+<!-- ============ 18. АВТОРИ ЯК ПІДПИСАНТИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Автори як підписанти · нова платформа</div>
+    <div class="src">ID автора і ID підписанта — один обліковий запис<br>«Мертві» — завершені петиції з &lt;10 підписами</div>
+  </div>
+  <h1>Автори підписують одне одного</h1>
+  <p class="lead">Лише {{AS_OWN}}% петицій підписали їхні ж автори. Натомість {{AS_OTHERS}}% авторів підписують чужі петиції. Між авторами утворилося {{AS_MUTUAL}} пар взаємної підтримки, і найбільша така спільнота налічує {{AS_LARGEST}} людей.</p>
+
+  <div class="tiles t4">
+    <div class="tile"><b class="num">{{AS_OWN}}%</b><span>петицій підписав сам автор</span></div>
+    <div class="tile"><b class="num">{{AS_OTHERS}}%</b><span>авторів підписують чужі петиції</span></div>
+    <div class="tile"><b class="num">{{AS_MUTUAL}}</b><span>пар «ти мені — я тобі»</span><small>{{AS_GROUPS}} спільнот, найбільша — {{AS_LARGEST}}</small></div>
+    <div class="tile"><b class="num">{{AS_SIGS_P}}%</b><span>усіх підписів — від авторів петицій</span><small>{{AS_SIGS}} підписів</small></div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h3>Чи допомагає взаємна підтримка: шанс набрати 25 000</h3>
+      {{AS_SUCC}}
+      <p class="note">Завершені петиції авторів. Розміри найбільших спільнот: {{AS_COMM}}.</p>
+    </div>
+    <div class="callout">Спільнота — автори, пов'язані ланцюжками взаємних підписів (A підписав петицію B, а B — петицію A). Це звичайна поведінка активістів, які підтримують одне одного, а не порушення. Питання лише в тому, чи дає вона результат.</div>
+  </div>
+
+  <h2 style="margin-top:14px">«Мертві» петиції</h2>
+  <p class="lead" style="font-size:9.6pt">Петицій, що завершилися з менш ніж 10 підписами, — {{D_N}} ({{D_SHARE}}% завершених), з них без жодного підпису — {{D_ZERO}}. Автор підписав лише {{D_OWN}}% з них, тоді як серед решти петицій — {{D_ALIVE_OWN}}%. Перший підпис у «мертвої» петиції з'являється в середньому через {{D_LAG}} год після публікації.</p>
+  <div class="grid2">
+    <div class="tile"><b class="num">{{D_OWN}}%</b><span>«мертвих» петицій підписав сам автор</span><small>серед решти — {{D_ALIVE_OWN}}%</small></div>
+    <div class="callout">Автор, який не підписав власну петицію, найчастіше не поширює її взагалі: петиція «вмирає» без першого кола підтримки. Звичайні петиції набирають перші підписи від автора та його оточення.</div>
+  </div>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>18 / 22</span></div>
+</section>
+
+<!-- ============ 19. МОВА, ЗАКОНОПРОЄКТИ, ПОВТОРНІ ВИМОГИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Тексти: мова, посилання на акти, повторні вимоги</div>
+    <div class="src">Успіх — частка тих, що набрали 25 000<br>Мова — за літерами та службовими словами заголовка</div>
+  </div>
+  <h1>Мова, номери законопроєктів і повтори</h1>
+
+  <div class="grid2">
+    <div>
+      <h3>Мова заголовка</h3>
+      <table class="compact"><thead><tr><th>Мова</th><th class="r">Петицій</th><th class="r">25k+</th><th class="r">Успіх</th><th class="r">Медіана</th></tr></thead><tbody>{{L_ROWS}}</tbody></table>
+      <p class="note">Заголовків російською — {{RU_N}}, жоден не набрав 25 000. Медіана — {{RU_MED}} підписів проти {{UK_MED}} в українських.</p>
+    </div>
+    <div class="card"><h3>Заголовків російською за рік</h3>{{RU_SVG}}</div>
+  </div>
+
+  <h3 style="margin-top:12px">Посилання на законопроєкт чи постанову</h3>
+  <div class="grid2">
+    <table class="compact"><thead><tr><th>Що в петиції</th><th class="r">Петицій</th><th class="r">25k+</th><th class="r">Успіх</th></tr></thead><tbody>{{BILL_ROWS}}</tbody></table>
+    <div class="callout">Петиції з конкретним номером акта в тексті набирають 25 000 у <b>{{BILL_X}}</b> раза частіше, ніж без посилань. Ймовірно, їх пишуть фахові спільноти (освітяни, медики), які вміють мобілізувати своїх.</div>
+  </div>
+
+  <h3 style="margin-top:12px">Вимоги, що повертаються після відповіді уряду</h3>
+  <table class="compact"><thead><tr><th>№</th><th>Петиція з відповіддю</th><th class="r">Схожих після</th><th class="r">Їхніх підписів</th></tr></thead><tbody>{{REP_ROWS}}</tbody></table>
+  <p class="note">Схожість — спільні слова заголовка (Жаккар ≥ 50%). Знайдено {{REP_N}} теми, до яких після відповіді повернулися {{REP_F}} разів.</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>19 / 22</span></div>
+</section>
+
+<!-- ============ 20. ПРО ЩО ПИШУТЬ ЖІНКИ І ЧОЛОВІКИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Стать авторів за темами · усі роки</div>
+    <div class="src">Стать — за по батькові автора<br>Теми з 60+ петиціями від фізичних осіб</div>
+  </div>
+  <h1>Про що пишуть жінки і чоловіки</h1>
+  <p class="lead">Найбільша частка авторок — у темі «{{G_TOP}}» ({{G_TOP_P}}%), найменша — «{{G_LOW}}» ({{G_LOW_P}}%).</p>
+  {{G_BARS}}
+  <div class="legend" style="margin-top:6px"><span><i class="dot f"></i>Авторки</span><span><i class="dot m"></i>Автори</span></div>
+  <h3 style="margin-top:12px">Успіх за статтю автора в кожній темі</h3>
+  <table class="compact">
+    <thead><tr><th>Тема</th><th class="r">Авторок</th><th class="r">25k+</th><th class="r">Успіх</th><th class="r">Авторів</th><th class="r">25k+</th><th class="r">Успіх</th></tr></thead>
+    <tbody>{{GS_ROWS}}</tbody>
+  </table>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>20 / 22</span></div>
+</section>
+
+<!-- ============ 21. МЕДІА І ПІДПИСИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Медіа і підписи · найбільші петиції та «магніти»</div>
+    <div class="src">Згадки — Google News (публічний RSS)<br>Вікно: тиждень до старту — 60 днів після завершення</div>
+  </div>
+  <h1>Чи медіа «розганяють» петиції</h1>
+  <p class="lead">{{M_LEAD}}</p>
+  <div class="tiles t4">{{M_TILES}}</div>
+
+  <table class="compact">
+    <thead><tr><th>№</th><th>Петиція</th><th class="r">Підписів</th><th class="r">Статей до / після</th><th class="r">Перша згадка</th><th class="r">25 000</th><th>Джерела</th></tr></thead>
+    <tbody>{{M_ROWS}}</tbody>
+  </table>
+  <p class="note">«Перша згадка» і «25 000» — день збору (від публікації). Google News індексує не всі медіа, а пошук за ключовими словами може пропустити статтю: «не знайдено» не означає, що медіа мовчали.</p>
+  <p class="note">Найчастіші джерела: {{M_SOURCES}}.</p>
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>21 / 22</span></div>
+</section>
+
+<!-- ============ 22. ХРОНОЛОГІЯ: МЕДІА І ПІДПИСИ ============ -->
+<section class="page">
+  <div class="top">
+    <div class="kicker">Хронологія · чотири найбільш висвітлені петиції</div>
+    <div class="src">Стовпчики — підписи по днях збору<br>▲ — вихід статті · пунктир — набір 25 000</div>
+  </div>
+  <h1>Що було раніше: статті чи підписи</h1>
+  {{M_TIMELINES}}
+  <div class="foot" style="margin-top:auto"><span>Петиції до КМУ: загальний огляд</span><span>22 / 22</span></div>
+</section>
+<script>
+/* Автопідгонка: якщо вміст сторінки не влазить в A4 (інші шрифти/рендеринг у браузері користувача),
+   зменшуємо дочірні блоки сторінки через CSS zoom (до 80%). Працює на екрані і в друці. */
+(function(){
+  function fitPage(p){
+    var kids=[].slice.call(p.children);
+    kids.forEach(function(k){k.style.zoom="";});
+    var w=p.getBoundingClientRect().width; if(w<600) return;
+    var limit=w*297/210+1;
+    for(var z=0.98; p.scrollHeight>limit && z>=0.8; z-=0.02){
+      kids.forEach(function(k){k.style.zoom=z.toFixed(2);});
+    }
+  }
+  function fitAll(){[].forEach.call(document.querySelectorAll(".page"),fitPage);}
+  fitAll();
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitAll);
+  var mq=window.matchMedia&&window.matchMedia("print");
+  if(mq){var h=function(m){fitAll();}; mq.addEventListener?mq.addEventListener("change",h):mq.addListener(h);}
+  window.addEventListener("resize",fitAll);
+})();
+</script>
+</body>
+</html>

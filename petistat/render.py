@@ -306,12 +306,19 @@ def build_context(rep: Report) -> dict[str, str]:
     return ctx
 
 
+def load_css(ctx: dict[str, str]) -> str:
+    """Спільні стилі (templates/base.css) з підставленими шрифтовими плейсхолдерами."""
+    css = resources.files("petistat").joinpath("templates/base.css").read_text(encoding="utf-8")
+    return re.sub(r"\{\{(FONT_\w+)\}\}", lambda m: ctx.get(m.group(1), m.group(0)), css)
+
+
 def render_html(rep: Report, template: str | Path | None = None, font: str = DEFAULT_FONT) -> str:
     if template:
         tpl = Path(template).read_text(encoding="utf-8")
     else:
         tpl = resources.files("petistat").joinpath("templates/report.html").read_text(encoding="utf-8")
     ctx = build_context(rep) | font_ctx(font)
+    ctx["CSS"] = load_css(ctx)
     out = re.sub(r"\{\{(\w+)\}\}", lambda m: ctx.get(m.group(1), m.group(0)), tpl)
     missing = sorted(set(re.findall(r"\{\{(\w+)\}\}", out)))
     if missing:

@@ -13,6 +13,7 @@ dependencies = ["rich>=13"]
 
 [project.scripts]
 petistat = "petistat.cli:main"
+kmustat = "petistat.kmu_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["petistat"]

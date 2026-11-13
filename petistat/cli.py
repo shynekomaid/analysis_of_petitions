@@ -108,7 +108,7 @@ def _print_summary(rep, paths, want_pdf):
     t, B = rep.focus, rep.baseline
     g = Table(show_header=False, box=None, padding=(0, 2))
     g.add_row("Петицій автора", str(len(rep.petitions)))
-    g.add_row("Підписів / унікальних людей", f"{fmt(rep.total)} / {fmt(rep.unique)}")
+    g.add_row("Підписів / унікальних підписантів", f"{fmt(rep.total)} / {fmt(rep.unique)}")
     g.add_row(f"Петиція {t.id}: жінки / чоловіки", f"[#eb6834]{pct(t.F, t.n)}%[/] / [#2a78d6]{pct(t.M, t.n)}%[/]")
     s = rep.surname
     g.add_row("  …визначено за прізвищем", f"{pct(s['F'] + s['M'], max(1, sum(s.values())))}% людей")
